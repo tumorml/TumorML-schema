@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  XML schema for TumorML 1.0
+  Author: David Johnson
+  Created with oXygen XML editor
+  
+  Copyright (c) 2012, University of Oxford 
+  The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
+  http://www.gnu.org/licenses/lgpl.html
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  elementFormDefault="qualified">
+  <!-- TUMOR repository metadata value types -->
+  <xs:simpleType name="mathType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="discrete"/>
+      <xs:enumeration value="continuous"/>
+      <xs:enumeration value="hybrid"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="biocomplexityDirectionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="topDown"/>
+      <xs:enumeration value="bottomUp"/>
+      <xs:enumeration value="middleOut"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="cancerType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="glioma"/>
+      <xs:enumeration value="nephroblastoma"/>
+      <xs:enumeration value="lung"/>
+      <xs:enumeration value="breast"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="materializationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="solid"/>
+      <xs:enumeration value="liquid"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="homogeneityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="homogeneous"/>
+      <xs:enumeration value="non-homogeneous"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="imageBasedDetectabilityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="imageable"/>
+      <xs:enumeration value="non-imageable"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    JSDL types
+    n.b. Restricted due to TUMOR repository DB schema restrictions
+  -->
+  <xs:simpleType name="osType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="unknown"/>
+      <xs:enumeration value="linux"/>
+      <xs:enumeration value="winNT"/>
+      <xs:enumeration value="macOS"/>
+      <xs:enumeration value="winXP"/>
+      <xs:enumeration value="winVista"/>
+      <xs:enumeration value="win7"/>
+      <xs:enumeration value="solaris"/>
+      <xs:enumeration value="sunOS"/>
+      <xs:enumeration value="javaVM"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="cpuType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="sparc"/>
+      <xs:enumeration value="powerpc"/>
+      <xs:enumeration value="x86"/>
+      <xs:enumeration value="x86_32"/>
+      <xs:enumeration value="x86_64"/>
+      <xs:enumeration value="parisc"/>
+      <xs:enumeration value="mips"/>
+      <xs:enumeration value="ia64"/>
+      <xs:enumeration value="arm"/>
+      <xs:enumeration value="other"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="langType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="c"/>
+      <xs:enumeration value="cpp"/>
+      <xs:enumeration value="java"/>
+      <xs:enumeration value="python"/>
+      <xs:enumeration value="perl"/>
+      <xs:enumeration value="fortran"/>
+      <xs:enumeration value="bash"/>
+      <xs:enumeration value="multiple"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="commandLineDataTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="int"/>
+      <xs:enumeration value="double"/>
+      <xs:enumeration value="filename"/>
+      <xs:enumeration value="string"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    some simple Dublin Core elements
+    n.b. Simplified due to TUMOR repository DB schema restrictions
+  -->
+  <xs:group name="dc_elements">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="title"/>
+        <xs:element ref="creator"/>
+        <xs:element ref="description"/>
+        <xs:element ref="publisher"/>
+        <xs:element ref="contributor"/>
+        <xs:element ref="date"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="creator" type="person"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="publisher" type="person"/>
+  <xs:element name="contributor" type="person"/>
+  <xs:element name="date" type="xs:dateTime"/>
+  <!-- Regex for alphanumeric combinations w/ underscores -->
+  <xs:simpleType name="ident">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="_*[0-9a-zA-Z][_0-9a-zA-Z]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    some simple xCard (vCard) elements describing an individual person, including a TUMOR user ID
+    n.b. Simplified due to TUMOR repository DB schema restrictions
+  -->
+  <xs:complexType name="person">
+    <xs:sequence>
+      <xs:element ref="person"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="person">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="fullname"/>
+        <xs:element minOccurs="0" ref="name"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="email"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="org"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="ident"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fullname" type="xs:string"/>
+  <xs:element name="name">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="surname"/>
+        <xs:element ref="given"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="prefix"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="suffix"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="surname" type="xs:string"/>
+  <xs:element name="given" type="xs:string"/>
+  <xs:element name="prefix" type="xs:string"/>
+  <xs:element name="suffix" type="xs:string"/>
+  <xs:element name="email" type="xs:string"/>
+  <xs:element name="org" type="xs:string"/>
+  <!--
+    TUMOR repository specific metadata
+    n.b. Based on TUMOR repository DB schema
+  -->
+  <xs:group name="tumor_elements">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="math"/>
+        <xs:element ref="biocomplexityDirection"/>
+        <xs:element ref="cancer"/>
+        <xs:element ref="materialization"/>
+        <xs:element ref="homogeneity"/>
+        <xs:element ref="imageBasedDetectability"/>
+        <xs:element ref="freeGrowth"/>
+        <xs:element ref="treatmentIncluded"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="math" type="xs:string"/>
+  <xs:element name="biocomplexityDirection" type="xs:string"/>
+  <xs:element name="cancer" type="xs:string"/>
+  <xs:element name="materialization" type="xs:string"/>
+  <xs:element name="homogeneity" type="xs:string"/>
+  <xs:element name="imageBasedDetectability" type="xs:string"/>
+  <xs:element name="freeGrowth" type="xs:boolean"/>
+  <xs:element name="treatmentIncluded" type="xs:boolean"/>
+  <!--
+    External references
+    n.b. Based on TUMOR repository DB schema
+  -->
+  <!-- bibType is based on BibTeX -->
+  <xs:simpleType name="bibType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="article"/>
+      <xs:enumeration value="book"/>
+      <xs:enumeration value="booklet"/>
+      <xs:enumeration value="manual"/>
+      <xs:enumeration value="techreport"/>
+      <xs:enumeration value="mastersthesis"/>
+      <xs:enumeration value="phdthesis"/>
+      <xs:enumeration value="inbook"/>
+      <xs:enumeration value="incollection"/>
+      <xs:enumeration value="proceedings"/>
+      <xs:enumeration value="inproceedings"/>
+      <xs:enumeration value="conference"/>
+      <xs:enumeration value="unpublished"/>
+      <xs:enumeration value="misc"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="reference">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="title"/>
+        <xs:element minOccurs="0" ref="source"/>
+        <xs:element minOccurs="0" name="creator" type="xs:string"/>
+        <xs:element minOccurs="0" ref="citation"/>
+        <xs:element ref="type"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="source" type="xs:string"/>
+  <xs:element name="citation" type="xs:string"/>
+  <xs:element name="type" type="xs:string"/>
+  <!--
+    SI unit prefixes based on NIST Reference
+    http://physics.nist.gov/cuu/Units/prefixes.html
+  -->
+  <xs:simpleType name="siUnitPrefixTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="yotta"/>
+      <xs:enumeration value="zetta"/>
+      <xs:enumeration value="exa"/>
+      <xs:enumeration value="peta"/>
+      <xs:enumeration value="tera"/>
+      <xs:enumeration value="giga"/>
+      <xs:enumeration value="mega"/>
+      <xs:enumeration value="kilo"/>
+      <xs:enumeration value="hecto"/>
+      <xs:enumeration value="deka"/>
+      <xs:enumeration value="deci"/>
+      <xs:enumeration value="centi"/>
+      <xs:enumeration value="milli"/>
+      <xs:enumeration value="micro"/>
+      <xs:enumeration value="nano"/>
+      <xs:enumeration value="pico"/>
+      <xs:enumeration value="femto"/>
+      <xs:enumeration value="atto"/>
+      <xs:enumeration value="zepto"/>
+      <xs:enumeration value="yocto"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    SI base units based on NIST Reference
+    http://physics.nist.gov/cuu/Units/current.html
+  -->
+  <xs:simpleType name="siBaseUnitTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="meter"/>
+      <xs:enumeration value="kilogram"/>
+      <xs:enumeration value="second"/>
+      <xs:enumeration value="ampere"/>
+      <xs:enumeration value="kelvin"/>
+      <xs:enumeration value="mole"/>
+      <xs:enumeration value="candela"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--
+    Some extra units accepted for use but not part of SI based on NIST Reference
+    http://physics.nist.gov/cuu/Units/outside.html + gram
+  -->
+  <xs:simpleType name="siExtraUnitTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="minute"/>
+      <xs:enumeration value="hour"/>
+      <xs:enumeration value="day"/>
+      <xs:enumeration value="gram"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- Combined lists of unit types used in TumorML -->
+  <xs:simpleType name="siUnitTypes">
+    <xs:union memberTypes="siBaseUnitTypes siExtraUnitTypes"/>
+  </xs:simpleType>
+  <!-- Each TumorML model has an ID to lookup in the repository -->
+  <xs:attributeGroup name="tumorml_id">
+    <xs:attribute name="id" use="required" type="ident"/>
+  </xs:attributeGroup>
+  <!-- Basic structure is a model ID, header containing metadata, followed by the model description -->
+  <xs:element name="tumorml">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="header"/>
+        <xs:element ref="model"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="tumorml_id"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The header contains metadata as: 
+    * Dublin Core elements
+    * TUMOR repository DB specific elements
+    * Bibliographical references (optional)
+  -->
+  <xs:element name="header">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="dc_elements"/>
+        <xs:group ref="tumor_elements"/>
+        <xs:element ref="reference"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The model description contains either:
+    1) a simple model as
+        * One or more implementations
+        * A input/output parameters profile
+    or
+    2) a complex model as
+        * Multiple submodels
+        * A model instance topology 
+  -->
+  <xs:element name="model">
+    <xs:complexType>
+      <xs:choice>
+        <xs:group ref="simpleModel"/>
+        <xs:group ref="complexModel"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="simpleModel">
+    <xs:sequence>
+      <xs:element ref="parameters"/>
+      <xs:element maxOccurs="unbounded" ref="implementation"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="complexModel">
+    <xs:sequence>
+      <xs:element ref="submodel"/>
+      <xs:element maxOccurs="unbounded" ref="submodel"/>
+      <xs:element ref="topology"/>
+    </xs:sequence>
+  </xs:group>
+  <!--
+    Each implementation contains:
+     * Metadata as Dublin Core and any number of bibliographic references (optional)
+     * A package file name
+     * A command line to initiate model execution
+     * A list of runtime environment requirements
+  -->
+  <xs:element name="implementation">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="dc_elements"/>
+        <xs:element ref="reference"/>
+        <xs:element ref="package"/>
+        <xs:element ref="command"/>
+        <xs:element ref="requirements"/>
+      </xs:choice>
+      <xs:attribute name="id" use="required" type="ident"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- A package consists of a package name and a list of files -->
+  <xs:element name="package">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="file"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="checksum" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- A file has a name, a full path relative to the package root, and a checksum (optional) -->
+  <xs:element name="file">
+    <xs:complexType>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="source" use="required"/>
+      <xs:attribute name="checksum"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- A command is a simple string for now. Will replace with a suitable regex -->
+  <xs:element name="command" type="xs:string"/>
+  <!--
+    The requirements include:
+     * Operating system (optional)
+     * CPU architecture (optional)
+     * Languages that need to be supported (optional, can be multiple)
+  -->
+  <xs:element name="requirements">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="operatingSystem"/>
+        <xs:element ref="CPUArchitecture"/>
+        <xs:element ref="language"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="operatingSystem" type="osType"/>
+  <xs:element name="CPUArchitecture" type="cpuType"/>
+  <xs:element name="language" type="langType"/>
+  <!--
+    Each submodel has a unique ID and:
+     * All the elements of a simple model
+    or
+     * All the elements of a complex model
+  -->
+  <xs:element name="submodel">
+    <xs:complexType>
+      <xs:choice>
+        <xs:group ref="simpleModel"/>
+        <xs:group ref="complexModel"/>
+      </xs:choice>
+      <xs:attribute name="id" type="ident"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- A topology declares a 2 or more instances and at least one coupling of instance parameters together -->
+  <xs:element name="topology">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="instance"/>
+        <xs:element maxOccurs="unbounded" ref="instance"/>
+        <xs:element maxOccurs="unbounded" ref="coupling"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- An instance has a unique ID, references a submodel by ID and has a multiplicity (currently fixed) -->
+  <xs:element name="instance">
+    <xs:complexType>
+      <xs:attribute name="id" use="required" type="ident"/>
+      <xs:attribute name="submodel" use="required" type="ident"/>
+      <xs:attribute name="multiplicity" type="xs:int"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    A coupling refers to a specific parameter of two different submodels
+     * from submodel.parameter
+     * to submodel.parameter
+  -->
+  <xs:element name="coupling">
+    <xs:complexType>
+      <xs:attribute name="from" use="required" type="ident"/>
+      <xs:attribute name="to" use="required" type="ident"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The parameters element defines at least on input parameter and multiple output parameters
+    n.b. There must be at least one input parameter
+  -->
+  <xs:element name="parameters">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="in"/>
+        <xs:element ref="out"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="in" type="parameter"/>
+  <xs:element name="out" type="parameter"/>
+  <!--
+    Parameters consist of:
+     * A unique ID/name
+     * A label (optional)
+     * A description  (optional)
+     * Whether or not this parameter is optional (optional)
+     * A value descriptor (optional)
+         * The descriptor contains a datatype, optional default value, and optional value range
+     * A unit constraint, based on SI prefix and base units (optional)
+     
+    regardless of whether they are inputs or outputs
+  -->
+  <xs:complexType name="parameter">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="description"/>
+      <xs:element ref="value"/>
+    </xs:choice>
+    <xs:attribute name="name" use="required" type="ident"/>
+    <xs:attribute name="label"/>
+    <xs:attribute name="optional" type="xs:boolean"/>
+  </xs:complexType>
+  <xs:element name="value">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" ref="range"/>
+        <xs:element minOccurs="0" ref="unit"/>
+      </xs:all>
+      <xs:attribute name="type" use="required" type="commandLineDataTypes"/>
+      <xs:attribute name="default"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="range">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" ref="min"/>
+        <xs:element minOccurs="0" ref="max"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="min">
+    <xs:complexType mixed="true">
+      <xs:attribute name="inclusive" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="max">
+    <xs:complexType mixed="true">
+      <xs:attribute name="inclusive" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="unit">
+    <xs:complexType>
+      <xs:attribute name="prefix" type="siUnitPrefixTypes"/>
+      <xs:attribute name="units" use="required" type="siUnitTypes"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
