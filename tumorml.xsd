@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  XML schema for TumorML 1.0
+  XML schema for TumorML 1.1
   Author: David Johnson
   Created with oXygen XML editor
   
-  Copyright (c) 2012, University of Oxford 
+  Copyright (c) 2012-2013, University of Oxford 
   The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
   http://www.gnu.org/licenses/lgpl.html
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-  elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <!-- TUMOR repository metadata value types -->
   <xs:simpleType name="mathType">
     <xs:restriction base="xs:string">
@@ -28,6 +27,7 @@
   <xs:simpleType name="cancerType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="glioma"/>
+      <xs:enumeration value="glioblastoma"/>
       <xs:enumeration value="nephroblastoma"/>
       <xs:enumeration value="lung"/>
       <xs:enumeration value="breast"/>
@@ -93,6 +93,7 @@
       <xs:enumeration value="fortran"/>
       <xs:enumeration value="bash"/>
       <xs:enumeration value="multiple"/>
+      <xs:enumeration value="matlab"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="commandLineDataTypes">
@@ -232,34 +233,6 @@
   <xs:element name="citation" type="xs:string"/>
   <xs:element name="type" type="xs:string"/>
   <!--
-    SI unit prefixes based on NIST Reference
-    http://physics.nist.gov/cuu/Units/prefixes.html
-  -->
-  <xs:simpleType name="siUnitPrefixTypes">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="yotta"/>
-      <xs:enumeration value="zetta"/>
-      <xs:enumeration value="exa"/>
-      <xs:enumeration value="peta"/>
-      <xs:enumeration value="tera"/>
-      <xs:enumeration value="giga"/>
-      <xs:enumeration value="mega"/>
-      <xs:enumeration value="kilo"/>
-      <xs:enumeration value="hecto"/>
-      <xs:enumeration value="deka"/>
-      <xs:enumeration value="deci"/>
-      <xs:enumeration value="centi"/>
-      <xs:enumeration value="milli"/>
-      <xs:enumeration value="micro"/>
-      <xs:enumeration value="nano"/>
-      <xs:enumeration value="pico"/>
-      <xs:enumeration value="femto"/>
-      <xs:enumeration value="atto"/>
-      <xs:enumeration value="zepto"/>
-      <xs:enumeration value="yocto"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <!--
     SI base units based on NIST Reference
     http://physics.nist.gov/cuu/Units/current.html
   -->
@@ -274,22 +247,35 @@
       <xs:enumeration value="candela"/>
     </xs:restriction>
   </xs:simpleType>
-  <!--
-    Some extra units accepted for use but not part of SI based on NIST Reference
-    http://physics.nist.gov/cuu/Units/outside.html + gram
-  -->
-  <xs:simpleType name="siExtraUnitTypes">
+  <!-- Some extra non standard units used in cancer modelling, e.g. arbitrary counts -->
+  <xs:simpleType name="tumorExtraUnitTypes">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="minute"/>
-      <xs:enumeration value="hour"/>
-      <xs:enumeration value="day"/>
-      <xs:enumeration value="gram"/>
+      <xs:enumeration value="item"/>
+      <xs:enumeration value="Gray"/>
     </xs:restriction>
   </xs:simpleType>
   <!-- Combined lists of unit types used in TumorML -->
-  <xs:simpleType name="siUnitTypes">
-    <xs:union memberTypes="siBaseUnitTypes siExtraUnitTypes"/>
+  <xs:simpleType name="unitTypes">
+    <xs:union memberTypes="siBaseUnitTypes tumorExtraUnitTypes"/>
   </xs:simpleType>
+  <!-- or derived unit name -->
+  <!-- Units model -->
+  <xs:element name="derivedUnit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="unit">
+          <xs:complexType>
+            <xs:attribute name="name" use="required"/>
+            <xs:attribute name="multiplier" type="xs:int"/>
+            <xs:attribute name="offset" type="xs:int"/>
+            <xs:attribute name="scale" type="xs:int"/>
+            <xs:attribute name="exp" type="xs:int"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
   <!-- Each TumorML model has an ID to lookup in the repository -->
   <xs:attributeGroup name="tumorml_id">
     <xs:attribute name="id" use="required" type="ident"/>
@@ -458,9 +444,17 @@
   <xs:element name="parameters">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="units"/>
         <xs:element ref="in"/>
         <xs:element ref="out"/>
       </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="units">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="derivedUnit"/>
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="in" type="parameter"/>
@@ -490,7 +484,15 @@
     <xs:complexType>
       <xs:all>
         <xs:element minOccurs="0" ref="range"/>
-        <xs:element minOccurs="0" ref="unit"/>
+        <xs:element minOccurs="0" name="unit">
+          <xs:complexType>
+            <xs:attribute name="type" use="required">
+              <xs:simpleType>
+                <xs:union memberTypes="unitTypes ident"/>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
       </xs:all>
       <xs:attribute name="type" use="required" type="commandLineDataTypes"/>
       <xs:attribute name="default"/>
@@ -512,12 +514,6 @@
   <xs:element name="max">
     <xs:complexType mixed="true">
       <xs:attribute name="inclusive" type="xs:boolean"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="unit">
-    <xs:complexType>
-      <xs:attribute name="prefix" type="siUnitPrefixTypes"/>
-      <xs:attribute name="units" use="required" type="siUnitTypes"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>

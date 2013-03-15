@@ -1,8 +1,8 @@
-# RELAX NG schema for TumorML 1.0
+# RELAX NG schema for TumorML 1.1
 # Author: David Johnson
 # Created with oXygen XML editor
 #
-# Copyright (c) 2012, University of Oxford 
+# Copyright (c) 2012-2013, University of Oxford 
 # The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
 # http://www.gnu.org/licenses/lgpl.html
 
@@ -20,6 +20,7 @@ biocomplexityDirectionType =
     | string "middleOut"
 cancerType = 
       string "glioma" 
+    | string "glioblastoma"
     | string "nephroblastoma" 
     | string "lung" 
     | string "breast"
@@ -67,6 +68,7 @@ langType =
     | string "fortran" 
     | string "bash" 
     | string "multiple"
+    | string "matlab"
     
 commandLineDataTypes = 
       string "int" 
@@ -145,31 +147,6 @@ reference = element reference {
   & element citation { text }?
   & element type { bibType | text }
 }
-
-# SI unit prefixes based on NIST Reference
-# http://physics.nist.gov/cuu/Units/prefixes.html
-
-siUnitPrefixTypes = 
-    string "yotta"
-  | string "zetta"
-  | string "exa"
-  | string "peta"
-  | string "tera"
-  | string "giga"
-  | string "mega"
-  | string "kilo"
-  | string "hecto"
-  | string "deka"
-  | string "deci"
-  | string "centi"
-  | string "milli"
-  | string "micro"
-  | string "nano"
-  | string "pico"
-  | string "femto"
-  | string "atto"
-  | string "zepto"
-  | string "yocto"
   
 # SI base units based on NIST Reference
 # http://physics.nist.gov/cuu/Units/current.html
@@ -183,18 +160,29 @@ siBaseUnitTypes =
   | string "mole"
   | string "candela"
   
-# Some extra units accepted for use but not part of SI based on NIST Reference
-# http://physics.nist.gov/cuu/Units/outside.html + gram
+# Some extra non standard units used in cancer modelling, e.g. arbitrary counts
   
-siExtraUnitTypes = 
-    string "minute"
-  | string "hour"
-  | string "day"
-  | string "gram"
+tumorExtraUnitTypes = 
+    string "item"
+  | string "Gray"
   
 # Combined lists of unit types used in TumorML
   
-siUnitTypes = siBaseUnitTypes | siExtraUnitTypes
+unitTypes = siBaseUnitTypes | tumorExtraUnitTypes
+# or derived unit name
+
+# Units model
+
+derivedUnit = element derivedUnit {
+    attribute name { text }
+  , element unit {
+        attribute name { text }
+      , attribute multiplier { xsd:int }?
+      , attribute offset { xsd:int }?
+      , attribute scale { xsd:int }?
+      , attribute exp { xsd:int }?
+    }+
+}
 
 # Each TumorML model has an ID to lookup in the repository
 
@@ -229,7 +217,7 @@ header = element header {
 #     * Multiple submodels
 #     * A model instance topology 
 
-model = element model { 
+model = element model {
     simpleModel
   | complexModel
 }
@@ -332,7 +320,8 @@ coupling = element coupling {
 # n.b. There must be at least one input parameter
 
 parameters = element parameters { 
-    element in { parameter }+
+    element units { derivedUnit+ }* 
+  & element in { parameter }+
   & element out { parameter }* 
 }
 
@@ -366,8 +355,8 @@ parameter = (
         }?
     }?
     & element unit { 
-        attribute prefix { siUnitPrefixTypes }?
-      & attribute units { siUnitTypes }
+      # SI unit, or an ID referencing a derived unit
+      attribute type { unitTypes | ident }
     }?    
   }
 )
