@@ -366,15 +366,28 @@
     </xs:complexType>
   </xs:element>
   <!-- A file has a name, a full path relative to the package root, and a checksum (optional) -->
+  <xs:simpleType name="fname">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="^[A-Za-z0-9\\-\\._]+$"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- not tested yet -->
+  <xs:simpleType name="dpath">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="^(/)?([^\\0]+(/)?)+$"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- not tested yet -->
   <xs:element name="file">
     <xs:complexType>
-      <xs:attribute name="name" use="required"/>
-      <xs:attribute name="source" use="required"/>
+      <xs:attribute name="name" use="required" type="fname"/>
+      <xs:attribute name="source" use="required" type="dpath"/>
       <xs:attribute name="checksum"/>
     </xs:complexType>
   </xs:element>
-  <!-- A command is a simple string for now. Will replace with a suitable regex -->
+  <!-- A command is a simple string for now. -->
   <xs:element name="command" type="xs:string"/>
+  <!-- TODO replace with a suitable regex -->
   <!--
     The requirements include:
      * Operating system (optional)
@@ -468,7 +481,7 @@
      * A value descriptor (optional)
          * The descriptor contains a datatype, optional default value, and optional value range
      * A unit constraint, based on SI prefix and base units (optional)
-     
+    
     regardless of whether they are inputs or outputs
   -->
   <xs:complexType name="parameter">

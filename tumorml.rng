@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  RELAX NG schema for TumorML 1.1
+  Author: David Johnson
+  Created with oXygen XML editor
+  
+  Copyright (c) 2012-2013, University of Oxford 
+  The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
+  http://www.gnu.org/licenses/lgpl.html
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- TUMOR repository metadata value types -->
+  <define name="mathType">
+    <choice>
+      <value type="string" datatypeLibrary="">discrete</value>
+      <value type="string" datatypeLibrary="">continuous</value>
+      <value type="string" datatypeLibrary="">hybrid</value>
+    </choice>
+  </define>
+  <define name="biocomplexityDirectionType">
+    <choice>
+      <value type="string" datatypeLibrary="">topDown</value>
+      <value type="string" datatypeLibrary="">bottomUp</value>
+      <value type="string" datatypeLibrary="">middleOut</value>
+    </choice>
+  </define>
+  <define name="cancerType">
+    <choice>
+      <value type="string" datatypeLibrary="">glioma</value>
+      <value type="string" datatypeLibrary="">glioblastoma</value>
+      <value type="string" datatypeLibrary="">nephroblastoma</value>
+      <value type="string" datatypeLibrary="">lung</value>
+      <value type="string" datatypeLibrary="">breast</value>
+    </choice>
+  </define>
+  <define name="materializationType">
+    <choice>
+      <value type="string" datatypeLibrary="">solid</value>
+      <value type="string" datatypeLibrary="">liquid</value>
+    </choice>
+  </define>
+  <define name="homogeneityType">
+    <choice>
+      <value type="string" datatypeLibrary="">homogeneous</value>
+      <value type="string" datatypeLibrary="">non-homogeneous</value>
+    </choice>
+  </define>
+  <define name="imageBasedDetectabilityType">
+    <choice>
+      <value type="string" datatypeLibrary="">imageable</value>
+      <value type="string" datatypeLibrary="">non-imageable</value>
+    </choice>
+  </define>
+  <!--
+    JSDL types
+    n.b. Restricted due to TUMOR repository DB schema restrictions
+  -->
+  <define name="osType">
+    <choice>
+      <value type="string" datatypeLibrary="">unknown</value>
+      <value type="string" datatypeLibrary="">linux</value>
+      <value type="string" datatypeLibrary="">winNT</value>
+      <value type="string" datatypeLibrary="">macOS</value>
+      <value type="string" datatypeLibrary="">winXP</value>
+      <value type="string" datatypeLibrary="">winVista</value>
+      <value type="string" datatypeLibrary="">win7</value>
+      <value type="string" datatypeLibrary="">solaris</value>
+      <value type="string" datatypeLibrary="">sunOS</value>
+      <value type="string" datatypeLibrary="">javaVM</value>
+    </choice>
+  </define>
+  <define name="cpuType">
+    <choice>
+      <value type="string" datatypeLibrary="">sparc</value>
+      <value type="string" datatypeLibrary="">powerpc</value>
+      <value type="string" datatypeLibrary="">x86</value>
+      <value type="string" datatypeLibrary="">x86_32</value>
+      <value type="string" datatypeLibrary="">x86_64</value>
+      <value type="string" datatypeLibrary="">parisc</value>
+      <value type="string" datatypeLibrary="">mips</value>
+      <value type="string" datatypeLibrary="">ia64</value>
+      <value type="string" datatypeLibrary="">arm</value>
+      <value type="string" datatypeLibrary="">other</value>
+    </choice>
+  </define>
+  <define name="langType">
+    <choice>
+      <value type="string" datatypeLibrary="">c</value>
+      <value type="string" datatypeLibrary="">cpp</value>
+      <value type="string" datatypeLibrary="">java</value>
+      <value type="string" datatypeLibrary="">python</value>
+      <value type="string" datatypeLibrary="">perl</value>
+      <value type="string" datatypeLibrary="">fortran</value>
+      <value type="string" datatypeLibrary="">bash</value>
+      <value type="string" datatypeLibrary="">multiple</value>
+      <value type="string" datatypeLibrary="">matlab</value>
+    </choice>
+  </define>
+  <define name="commandLineDataTypes">
+    <choice>
+      <value type="string" datatypeLibrary="">int</value>
+      <value type="string" datatypeLibrary="">double</value>
+      <value type="string" datatypeLibrary="">filename</value>
+      <value type="string" datatypeLibrary="">string</value>
+    </choice>
+  </define>
+  <!--
+    some simple Dublin Core elements
+    n.b. Simplified due to TUMOR repository DB schema restrictions
+  -->
+  <define name="dc_elements">
+    <interleave>
+      <element name="title">
+        <text/>
+      </element>
+      <optional>
+        <element name="creator">
+          <ref name="person"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="description">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="publisher">
+          <ref name="person"/>
+        </element>
+      </optional>
+      <zeroOrMore>
+        <element name="contributor">
+          <ref name="person"/>
+        </element>
+      </zeroOrMore>
+      <element name="date">
+        <data type="dateTime"/>
+      </element>
+    </interleave>
+  </define>
+  <!-- Regex for alphanumeric combinations w/ underscores -->
+  <define name="ident">
+    <data type="token">
+      <param name="pattern">_*[0-9a-zA-Z][_0-9a-zA-Z]*</param>
+    </data>
+  </define>
+  <!--
+    some simple xCard (vCard) elements describing an individual person, including a TUMOR user ID
+    n.b. Simplified due to TUMOR repository DB schema restrictions
+  -->
+  <define name="person">
+    <element name="person">
+      <attribute name="id">
+        <ref name="ident"/>
+      </attribute>
+      <optional>
+        <element name="fullname">
+          <text/>
+        </element>
+      </optional>
+      <optional>
+        <element name="name">
+          <element name="surname">
+            <text/>
+          </element>
+          <element name="given">
+            <text/>
+          </element>
+          <zeroOrMore>
+            <element name="prefix">
+              <text/>
+            </element>
+          </zeroOrMore>
+          <zeroOrMore>
+            <element name="suffix">
+              <text/>
+            </element>
+          </zeroOrMore>
+        </element>
+      </optional>
+      <zeroOrMore>
+        <element name="email">
+          <text/>
+        </element>
+      </zeroOrMore>
+      <zeroOrMore>
+        <element name="org">
+          <text/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    TUMOR repository specific metadata
+    n.b. Based on TUMOR repository DB schema
+  -->
+  <define name="tumor_elements">
+    <interleave>
+      <optional>
+        <element name="math">
+          <choice>
+            <ref name="mathType"/>
+            <text/>
+          </choice>
+        </element>
+      </optional>
+      <optional>
+        <element name="biocomplexityDirection">
+          <choice>
+            <ref name="biocomplexityDirectionType"/>
+            <text/>
+          </choice>
+        </element>
+      </optional>
+      <optional>
+        <element name="cancer">
+          <choice>
+            <ref name="cancerType"/>
+            <text/>
+          </choice>
+        </element>
+      </optional>
+      <optional>
+        <element name="materialization">
+          <choice>
+            <ref name="materializationType"/>
+            <text/>
+          </choice>
+        </element>
+      </optional>
+      <optional>
+        <element name="homogeneity">
+          <choice>
+            <ref name="homogeneityType"/>
+            <text/>
+          </choice>
+        </element>
+      </optional>
+      <optional>
+        <element name="imageBasedDetectability">
+          <choice>
+            <ref name="imageBasedDetectabilityType"/>
+            <text/>
+          </choice>
+        </element>
+      </optional>
+      <optional>
+        <element name="freeGrowth">
+          <data type="boolean"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="treatmentIncluded">
+          <data type="boolean"/>
+        </element>
+      </optional>
+    </interleave>
+  </define>
+  <!--
+    External references
+    n.b. Based on TUMOR repository DB schema
+  -->
+  <!-- bibType is based on BibTeX -->
+  <define name="bibType">
+    <choice>
+      <value type="string" datatypeLibrary="">article</value>
+      <value type="string" datatypeLibrary="">book</value>
+      <value type="string" datatypeLibrary="">booklet</value>
+      <value type="string" datatypeLibrary="">manual</value>
+      <value type="string" datatypeLibrary="">techreport</value>
+      <value type="string" datatypeLibrary="">mastersthesis</value>
+      <value type="string" datatypeLibrary="">phdthesis</value>
+      <value type="string" datatypeLibrary="">inbook</value>
+      <value type="string" datatypeLibrary="">incollection</value>
+      <value type="string" datatypeLibrary="">proceedings</value>
+      <value type="string" datatypeLibrary="">inproceedings</value>
+      <value type="string" datatypeLibrary="">conference</value>
+      <value type="string" datatypeLibrary="">unpublished</value>
+      <value type="string" datatypeLibrary="">misc</value>
+    </choice>
+  </define>
+  <define name="reference">
+    <element name="reference">
+      <interleave>
+        <element name="title">
+          <text/>
+        </element>
+        <optional>
+          <element name="source">
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name="creator">
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name="citation">
+            <text/>
+          </element>
+        </optional>
+        <element name="type">
+          <choice>
+            <ref name="bibType"/>
+            <text/>
+          </choice>
+        </element>
+      </interleave>
+    </element>
+  </define>
+  <!--
+    SI base units based on NIST Reference
+    http://physics.nist.gov/cuu/Units/current.html
+  -->
+  <define name="siBaseUnitTypes">
+    <choice>
+      <value type="string" datatypeLibrary="">meter</value>
+      <value type="string" datatypeLibrary="">kilogram</value>
+      <value type="string" datatypeLibrary="">second</value>
+      <value type="string" datatypeLibrary="">ampere</value>
+      <value type="string" datatypeLibrary="">kelvin</value>
+      <value type="string" datatypeLibrary="">mole</value>
+      <value type="string" datatypeLibrary="">candela</value>
+    </choice>
+  </define>
+  <!-- Some extra non standard units used in cancer modelling, e.g. arbitrary counts -->
+  <define name="tumorExtraUnitTypes">
+    <choice>
+      <value type="string" datatypeLibrary="">item</value>
+      <value type="string" datatypeLibrary="">Gray</value>
+    </choice>
+  </define>
+  <!-- Combined lists of unit types used in TumorML -->
+  <define name="unitTypes">
+    <choice>
+      <ref name="siBaseUnitTypes"/>
+      <ref name="tumorExtraUnitTypes"/>
+    </choice>
+  </define>
+  <!-- or derived unit name -->
+  <!-- Units model -->
+  <define name="derivedUnit">
+    <element name="derivedUnit">
+      <attribute name="name"/>
+      <oneOrMore>
+        <element name="unit">
+          <attribute name="name"/>
+          <optional>
+            <attribute name="multiplier">
+              <data type="int"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="offset">
+              <data type="int"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="scale">
+              <data type="int"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="exp">
+              <data type="int"/>
+            </attribute>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+  <!-- Each TumorML model has an ID to lookup in the repository -->
+  <start>
+    <ref name="tumorml"/>
+  </start>
+  <define name="tumorml_id">
+    <attribute name="id">
+      <ref name="ident"/>
+    </attribute>
+  </define>
+  <!-- Basic structure is a model ID, header containing metadata, followed by the model description -->
+  <define name="tumorml">
+    <element name="tumorml">
+      <ref name="tumorml_id"/>
+      <ref name="header"/>
+      <ref name="model"/>
+    </element>
+  </define>
+  <!--
+    The header contains metadata as: 
+    * Dublin Core elements
+    * TUMOR repository DB specific elements
+    * Bibliographical references (optional)
+  -->
+  <define name="header">
+    <element name="header">
+      <interleave>
+        <ref name="dc_elements"/>
+        <ref name="tumor_elements"/>
+        <zeroOrMore>
+          <ref name="reference"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <!--
+    The model description contains either:
+    1) a simple model as
+        * One or more implementations
+        * A input/output parameters profile
+    or
+    2) a complex model as
+        * Multiple submodels
+        * A model instance topology 
+  -->
+  <define name="model">
+    <element name="model">
+      <choice>
+        <ref name="simpleModel"/>
+        <ref name="complexModel"/>
+      </choice>
+    </element>
+  </define>
+  <define name="simpleModel">
+    <ref name="parameters"/>
+    <oneOrMore>
+      <ref name="implementation"/>
+    </oneOrMore>
+  </define>
+  <define name="complexModel">
+    <ref name="submodel"/>
+    <oneOrMore>
+      <ref name="submodel"/>
+    </oneOrMore>
+    <ref name="topology"/>
+  </define>
+  <!--
+    Each implementation contains:
+     * Metadata as Dublin Core and any number of bibliographic references (optional)
+     * A package file name
+     * A command line to initiate model execution
+     * A list of runtime environment requirements
+  -->
+  <define name="implementation">
+    <element name="implementation">
+      <interleave>
+        <attribute name="id">
+          <ref name="ident"/>
+        </attribute>
+        <ref name="dc_elements"/>
+        <zeroOrMore>
+          <ref name="reference"/>
+        </zeroOrMore>
+        <ref name="package"/>
+        <ref name="command"/>
+        <ref name="requirements"/>
+      </interleave>
+    </element>
+  </define>
+  <!-- A package consists of a package name and a list of files -->
+  <define name="package">
+    <element name="package">
+      <interleave>
+        <attribute name="name"/>
+        <attribute name="checksum"/>
+        <oneOrMore>
+          <ref name="file"/>
+        </oneOrMore>
+      </interleave>
+    </element>
+  </define>
+  <!-- A file has a name, a full path relative to the package root, and a checksum (optional) -->
+  <define name="fname">
+    <data type="token">
+      <param name="pattern">^[A-Za-z0-9\\-\\._]+$</param>
+    </data>
+  </define>
+  <!-- not tested yet -->
+  <define name="dpath">
+    <data type="token">
+      <param name="pattern">^(/)?([^\\0]+(/)?)+$</param>
+    </data>
+  </define>
+  <!-- not tested yet -->
+  <define name="file">
+    <element name="file">
+      <interleave>
+        <attribute name="name">
+          <ref name="fname"/>
+        </attribute>
+        <!-- regex describing valid filenames -->
+        <attribute name="source">
+          <ref name="dpath"/>
+        </attribute>
+        <optional>
+          <!-- regex describing valid paths -->
+          <attribute name="checksum"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+  <!-- A command is a simple string for now. -->
+  <define name="command">
+    <element name="command">
+      <text/>
+    </element>
+  </define>
+  <!-- TODO replace with a suitable regex -->
+  <!--
+    The requirements include:
+     * Operating system (optional)
+     * CPU architecture (optional)
+     * Languages that need to be supported (optional, can be multiple)
+  -->
+  <define name="requirements">
+    <element name="requirements">
+      <interleave>
+        <optional>
+          <element name="operatingSystem">
+            <ref name="osType"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="CPUArchitecture">
+            <ref name="cpuType"/>
+          </element>
+        </optional>
+        <zeroOrMore>
+          <element name="language">
+            <ref name="langType"/>
+          </element>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <!--
+    Each submodel has a unique ID and:
+     * All the elements of a simple model
+    or
+     * All the elements of a complex model
+  -->
+  <define name="submodel">
+    <element name="submodel">
+      <choice>
+        <group>
+          <attribute name="id">
+            <ref name="ident"/>
+          </attribute>
+          <ref name="simpleModel"/>
+        </group>
+        <ref name="complexModel"/>
+      </choice>
+    </element>
+  </define>
+  <!-- A topology declares a 2 or more instances and at least one coupling of instance parameters together -->
+  <define name="topology">
+    <element name="topology">
+      <ref name="instance"/>
+      <oneOrMore>
+        <ref name="instance"/>
+      </oneOrMore>
+      <oneOrMore>
+        <ref name="coupling"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <!-- An instance has a unique ID, references a submodel by ID and has a multiplicity (currently fixed) -->
+  <define name="instance">
+    <element name="instance">
+      <interleave>
+        <attribute name="id">
+          <ref name="ident"/>
+        </attribute>
+        <attribute name="submodel">
+          <ref name="ident"/>
+        </attribute>
+        <optional>
+          <attribute name="multiplicity">
+            <data type="int"/>
+          </attribute>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+  <!--
+    A coupling refers to a specific parameter of two different submodels
+     * from submodel.parameter
+     * to submodel.parameter
+  -->
+  <define name="coupling">
+    <element name="coupling">
+      <interleave>
+        <attribute name="from">
+          <ref name="ident"/>
+        </attribute>
+        <attribute name="to">
+          <ref name="ident"/>
+        </attribute>
+      </interleave>
+    </element>
+  </define>
+  <!--
+    The parameters element defines at least on input parameter and multiple output parameters
+    n.b. There must be at least one input parameter
+  -->
+  <define name="parameters">
+    <element name="parameters">
+      <interleave>
+        <zeroOrMore>
+          <element name="units">
+            <oneOrMore>
+              <ref name="derivedUnit"/>
+            </oneOrMore>
+          </element>
+        </zeroOrMore>
+        <oneOrMore>
+          <element name="in">
+            <ref name="parameter"/>
+          </element>
+        </oneOrMore>
+        <zeroOrMore>
+          <element name="out">
+            <ref name="parameter"/>
+          </element>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <!--
+    Parameters consist of:
+     * A unique ID/name
+     * A label (optional)
+     * A description  (optional)
+     * Whether or not this parameter is optional (optional)
+     * A value descriptor (optional)
+         * The descriptor contains a datatype, optional default value, and optional value range
+     * A unit constraint, based on SI prefix and base units (optional)
+     
+    regardless of whether they are inputs or outputs
+  -->
+  <define name="parameter">
+    <interleave>
+      <attribute name="name">
+        <ref name="ident"/>
+      </attribute>
+      <optional>
+        <attribute name="label"/>
+      </optional>
+      <optional>
+        <attribute name="optional">
+          <data type="boolean"/>
+        </attribute>
+      </optional>
+      <optional>
+        <element name="description">
+          <text/>
+        </element>
+      </optional>
+      <element name="value">
+        <interleave>
+          <attribute name="type">
+            <ref name="commandLineDataTypes"/>
+          </attribute>
+          <optional>
+            <attribute name="default"/>
+          </optional>
+          <optional>
+            <element name="range">
+              <interleave>
+                <optional>
+                  <element name="min">
+                    <interleave>
+                      <optional>
+                        <attribute name="inclusive">
+                          <data type="boolean"/>
+                        </attribute>
+                      </optional>
+                      <text/>
+                    </interleave>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="max">
+                    <interleave>
+                      <optional>
+                        <attribute name="inclusive">
+                          <data type="boolean"/>
+                        </attribute>
+                      </optional>
+                      <text/>
+                    </interleave>
+                  </element>
+                </optional>
+              </interleave>
+            </element>
+          </optional>
+          <optional>
+            <element name="unit">
+              <!-- SI unit, or an ID referencing a derived unit -->
+              <attribute name="type">
+                <choice>
+                  <ref name="unitTypes"/>
+                  <ref name="ident"/>
+                </choice>
+              </attribute>
+            </element>
+          </optional>
+        </interleave>
+      </element>
+    </interleave>
+  </define>
+</grammar>

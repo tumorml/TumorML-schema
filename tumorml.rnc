@@ -6,7 +6,7 @@
 # The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
 # http://www.gnu.org/licenses/lgpl.html
 
-namespace tumorml = "http://www.tumor-project.eu/tumorml/1.0"
+namespace tumorml = "http://www.tumor-project.eu/tumorml/1.1"
 
 # TUMOR repository metadata value types
 
@@ -258,15 +258,19 @@ package = element package {
 
 # A file has a name, a full path relative to the package root, and a checksum (optional)
 
+fname = xsd:token { pattern = "^[A-Za-z0-9\\-\\._]+$" } # not tested yet
+
+dpath = xsd:token { pattern = "^(/)?([^\\0]+(/)?)+$" } # not tested yet
+
 file = element file {
-    attribute name { text } # replace with a regex describing valid filenames
-  & attribute source { text } # replace with a regex describing valid paths
+    attribute name { fname } # regex describing valid filenames
+  & attribute source { dpath } # regex describing valid paths
   & attribute checksum { text }?
 }
 
-# A command is a simple string for now. Will replace with a suitable regex
+# A command is a simple string for now.
 
-command = element command { text } 
+command = element command { text } #TODO replace with a suitable regex
 
 # The requirements include:
 #  * Operating system (optional)
