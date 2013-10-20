@@ -8,9 +8,9 @@
 
 namespace tumorml = "http://www.tumor-project.eu/tumorml/1.1"
 
-# Regex for alphanumeric combinations w/ underscores
+# Regex for alphanumeric combinations w/ underscores OR LSIDs
 
-ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*" }
+ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:lsid:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)" }
 
 # TUMOR repository metadata value types
 
@@ -258,9 +258,9 @@ package = element package {
 
 # A file has a name, a full path relative to the package root, and a checksum (optional)
 
-fname = xsd:token { pattern = "^[A-Za-z0-9\\-\\._]+$" } # not tested yet
+fname = xsd:token { pattern = "[A-Za-z0-9\\-\\._]+" } # not tested yet
 
-dpath = xsd:token { pattern = "^(/)?([^\\0]+(/)?)+$" } # not tested yet
+dpath = xsd:token { pattern = "(/)?([^\\0]+(/)?)+" } # not tested yet
 
 file = element file {
     attribute name { fname } # regex describing valid filenames
