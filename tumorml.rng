@@ -9,6 +9,12 @@
   http://www.gnu.org/licenses/lgpl.html
 -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- Regex for alphanumeric combinations w/ underscores -->
+  <define name="ident">
+    <data type="token">
+      <param name="pattern">_*[0-9a-zA-Z][_0-9a-zA-Z]*</param>
+    </data>
+  </define>
   <!-- TUMOR repository metadata value types -->
   <define name="mathType">
     <choice>
@@ -137,12 +143,6 @@
         <data type="dateTime"/>
       </element>
     </interleave>
-  </define>
-  <!-- Regex for alphanumeric combinations w/ underscores -->
-  <define name="ident">
-    <data type="token">
-      <param name="pattern">_*[0-9a-zA-Z][_0-9a-zA-Z]*</param>
-    </data>
   </define>
   <!--
     some simple xCard (vCard) elements describing an individual person, including a TUMOR user ID

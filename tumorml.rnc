@@ -8,6 +8,10 @@
 
 namespace tumorml = "http://www.tumor-project.eu/tumorml/1.1"
 
+# Regex for alphanumeric combinations w/ underscores
+
+ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*" }
+
 # TUMOR repository metadata value types
 
 mathType = 
@@ -87,10 +91,6 @@ dc_elements = (
   & element contributor { person }*
   & element date { xsd:dateTime }
 )
-
-# Regex for alphanumeric combinations w/ underscores
-
-ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*" }
 
 # some simple xCard (vCard) elements describing an individual person, including a TUMOR user ID
 # n.b. Simplified due to TUMOR repository DB schema restrictions

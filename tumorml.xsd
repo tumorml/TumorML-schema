@@ -8,7 +8,13 @@
   The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
   http://www.gnu.org/licenses/lgpl.html
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.tumorml.org/tumorml/1.1" xmlns="http://www.tumorml.org/tumorml/1.1" elementFormDefault="qualified">
+  <!-- Regex for alphanumeric combinations w/ underscores -->
+  <xs:simpleType name="ident">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="_*[0-9a-zA-Z][_0-9a-zA-Z]*"/>
+    </xs:restriction>
+  </xs:simpleType>
   <!-- TUMOR repository metadata value types -->
   <xs:simpleType name="mathType">
     <xs:restriction base="xs:string">
@@ -105,34 +111,6 @@
     </xs:restriction>
   </xs:simpleType>
   <!--
-    some simple Dublin Core elements
-    n.b. Simplified due to TUMOR repository DB schema restrictions
-  -->
-  <xs:group name="dc_elements">
-    <xs:sequence>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="title"/>
-        <xs:element ref="creator"/>
-        <xs:element ref="description"/>
-        <xs:element ref="publisher"/>
-        <xs:element ref="contributor"/>
-        <xs:element ref="date"/>
-      </xs:choice>
-    </xs:sequence>
-  </xs:group>
-  <xs:element name="title" type="xs:string"/>
-  <xs:element name="creator" type="person"/>
-  <xs:element name="description" type="xs:string"/>
-  <xs:element name="publisher" type="person"/>
-  <xs:element name="contributor" type="person"/>
-  <xs:element name="date" type="xs:dateTime"/>
-  <!-- Regex for alphanumeric combinations w/ underscores -->
-  <xs:simpleType name="ident">
-    <xs:restriction base="xs:token">
-      <xs:pattern value="_*[0-9a-zA-Z][_0-9a-zA-Z]*"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <!--
     some simple xCard (vCard) elements describing an individual person, including a TUMOR user ID
     n.b. Simplified due to TUMOR repository DB schema restrictions
   -->
@@ -169,6 +147,28 @@
   <xs:element name="suffix" type="xs:string"/>
   <xs:element name="email" type="xs:string"/>
   <xs:element name="org" type="xs:string"/>
+  <!--
+    some simple Dublin Core elements
+    n.b. Simplified due to TUMOR repository DB schema restrictions
+  -->
+  <xs:group name="dc_elements">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="title"/>
+        <xs:element ref="creator"/>
+        <xs:element ref="description"/>
+        <xs:element ref="publisher"/>
+        <xs:element ref="contributor"/>
+        <xs:element ref="date"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="creator" type="person"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="publisher" type="person"/>
+  <xs:element name="contributor" type="person"/>
+  <xs:element name="date" type="xs:dateTime"/>
   <!--
     TUMOR repository specific metadata
     n.b. Based on TUMOR repository DB schema
