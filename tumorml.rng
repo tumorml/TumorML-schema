@@ -2,17 +2,18 @@
 <!--
   RELAX NG schema for TumorML 1.1
   Author: David Johnson
+  Contributors: Stelios Sfakianakis
   Created with oXygen XML editor
   
-  Copyright (c) 2012-2013, University of Oxford 
+  Copyright (c) 2012-2013, University of Oxford; 2013-, TumorML contributors. 
   The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
   http://www.gnu.org/licenses/lgpl.html
 -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <!-- Regex for alphanumeric combinations w/ underscores -->
+  <!-- Regex for alphanumeric combinations w/ underscores OR MIRIAM URIs -->
   <define name="ident">
     <data type="token">
-      <param name="pattern">_*[0-9a-zA-Z][_0-9a-zA-Z]*</param>
+      <param name="pattern">_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:miriam:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)</param>
     </data>
   </define>
   <!-- TUMOR repository metadata value types -->
@@ -473,13 +474,13 @@
   <!-- A file has a name, a full path relative to the package root, and a checksum (optional) -->
   <define name="fname">
     <data type="token">
-      <param name="pattern">^[A-Za-z0-9\\-\\._]+$</param>
+      <param name="pattern">[A-Za-z0-9\\-\\._]+</param>
     </data>
   </define>
   <!-- not tested yet -->
   <define name="dpath">
     <data type="token">
-      <param name="pattern">^(/)?([^\\0]+(/)?)+$</param>
+      <param name="pattern">(/)?([^\\0]+(/)?)+</param>
     </data>
   </define>
   <!-- not tested yet -->
