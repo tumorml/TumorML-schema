@@ -8,9 +8,9 @@
 
 namespace tumorml = "http://www.tumor-project.eu/tumorml/1.1"
 
-# Regex for alphanumeric combinations w/ underscores OR LSIDs
+# Regex for alphanumeric combinations w/ underscores OR MIRIAM URIs
 
-ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:lsid:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)" }
+ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:miriam:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)" }
 
 # TUMOR repository metadata value types
 
