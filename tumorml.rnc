@@ -12,6 +12,7 @@ namespace tumorml = "http://www.tumor-project.eu/tumorml/1.1"
 # Regex for alphanumeric combinations w/ underscores OR MIRIAM URIs
 
 ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:miriam:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)" }
+url = xsd:token { pattern = "[hH][tT]{2}[pP]://[wW]{3}.*" }
 
 # TUMOR repository metadata value types
 
@@ -346,6 +347,7 @@ parameter = (
   & attribute label { text }?
   & attribute optional { xsd:boolean }?
   & element description { text }?  
+  & element concept_id { url }?  
   & element value {
       attribute type { commandLineDataTypes }
     & attribute \default { text }?

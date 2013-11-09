@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  RELAX NG schema for TumorML 1.1
+  XML schema for TumorML 1.1
   Author: David Johnson
   Contributors: Stelios Sfakianakis
   Created with oXygen XML editor
@@ -9,11 +9,16 @@
   The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
   http://www.gnu.org/licenses/lgpl.html
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.tumorml.org/tumorml/1.1" xmlns="http://www.tumorml.org/tumorml/1.1" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <!-- Regex for alphanumeric combinations w/ underscores OR MIRIAM URIs -->
   <xs:simpleType name="ident">
     <xs:restriction base="xs:token">
       <xs:pattern value="_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:miriam:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="url">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[hH][tT]{2}[pP]://[wW]{3}.*"/>
     </xs:restriction>
   </xs:simpleType>
   <!-- TUMOR repository metadata value types -->
@@ -488,12 +493,14 @@
   <xs:complexType name="parameter">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element ref="description"/>
+      <xs:element ref="concept_id"/>
       <xs:element ref="value"/>
     </xs:choice>
     <xs:attribute name="name" use="required" type="ident"/>
     <xs:attribute name="label"/>
     <xs:attribute name="optional" type="xs:boolean"/>
   </xs:complexType>
+  <xs:element name="concept_id" type="url"/>
   <xs:element name="value">
     <xs:complexType>
       <xs:all>
