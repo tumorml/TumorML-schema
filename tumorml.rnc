@@ -7,11 +7,11 @@
 # The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
 # http://www.gnu.org/licenses/lgpl.html
 
-namespace tumorml = "http://www.tumor-project.eu/tumorml/1.2"
+default namespace tumorml = "http://www.tumor-project.eu/tumorml/1.2"
 
 # Regex for alphanumeric combinations w/ underscores OR MIRIAM URIs
 
-ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:miriam:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)" }
+ident = xsd:token { pattern = "(_*[0-9a-zA-Z][\w_]*)|(urn:miriam:[0-9a-zA-Z][\w]*:[0-9a-zA-Z][\w]*)|(urn:miriam:[0-9a-zA-Z][\w]*\.[0-9a-zA-Z][\w]*:[0-9a-zA-Z][\w:\.]*)|(urn:orcid:[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9])|(urn:[0-9a-zA-Z][\w]*\.[0-9a-zA-Z][\w]*:[0-9a-zA-Z][\w]*:[0-9a-zA-Z][\w]*)" }
 url = xsd:token { pattern = "[hH][tT]{2}[pP]://[wW]{3}.*" }
 
 # Tumor Model Taxonomy
@@ -262,11 +262,9 @@ package = element package {
 
 fname = xsd:token { pattern = "[A-Za-z0-9\\-\\._]+" } # not tested yet
 
-dpath = xsd:token { pattern = "(/)?([^\\0]+(/)?)+" } # not tested yet
-
 file = element file {
     attribute name { fname } # regex describing valid filenames
-  & attribute source { dpath } # regex describing valid paths
+  & attribute source { ident } # refer to URN within DB
   & attribute checksum { text }?
 }
 

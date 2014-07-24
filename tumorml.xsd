@@ -9,7 +9,7 @@
   The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
   http://www.gnu.org/licenses/lgpl.html
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns="http://www.tumorml.org/tumorml/1.2" targetNamespace="http://www.tumorml.org/tumorml/1.2" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <!-- Regex for alphanumeric combinations w/ underscores OR MIRIAM URIs -->
   <xs:simpleType name="ident">
     <xs:restriction base="xs:token">
