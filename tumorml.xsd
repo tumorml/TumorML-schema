@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  XML schema for TumorML 1.1
+  XML schema for TumorML 1.2
   Author: David Johnson
   Contributors: Stelios Sfakianakis
   Created with oXygen XML editor
@@ -21,7 +21,7 @@
       <xs:pattern value="[hH][tT]{2}[pP]://[wW]{3}.*"/>
     </xs:restriction>
   </xs:simpleType>
-  <!-- TUMOR repository metadata value types -->
+  <!-- Tumor Model Taxonomy -->
   <xs:simpleType name="mathType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="discrete"/>
@@ -29,11 +29,20 @@
       <xs:enumeration value="hybrid"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="biocomplexityDirectionType">
+  <xs:simpleType name="multiScaleType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="topDown"/>
       <xs:enumeration value="bottomUp"/>
       <xs:enumeration value="middleOut"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="singleScaleType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="gene"/>
+      <xs:enumeration value="subcellular"/>
+      <xs:enumeration value="cell"/>
+      <xs:enumeration value="tissue"/>
+      <xs:enumeration value="organ"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="cancerType">
@@ -43,24 +52,13 @@
       <xs:enumeration value="nephroblastoma"/>
       <xs:enumeration value="lung"/>
       <xs:enumeration value="breast"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="materializationType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="solid"/>
-      <xs:enumeration value="liquid"/>
+      <xs:enumeration value="generic"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="homogeneityType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="homogeneous"/>
       <xs:enumeration value="non-homogeneous"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="imageBasedDetectabilityType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="imageable"/>
-      <xs:enumeration value="non-imageable"/>
     </xs:restriction>
   </xs:simpleType>
   <!--
@@ -183,22 +181,20 @@
     <xs:sequence>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="math"/>
-        <xs:element ref="biocomplexityDirection"/>
+        <xs:element ref="singleScale"/>
+        <xs:element ref="multiScale"/>
         <xs:element ref="cancer"/>
-        <xs:element ref="materialization"/>
         <xs:element ref="homogeneity"/>
-        <xs:element ref="imageBasedDetectability"/>
         <xs:element ref="freeGrowth"/>
         <xs:element ref="treatmentIncluded"/>
       </xs:choice>
     </xs:sequence>
   </xs:group>
   <xs:element name="math" type="xs:string"/>
-  <xs:element name="biocomplexityDirection" type="xs:string"/>
+  <xs:element name="singleScale" type="xs:string"/>
+  <xs:element name="multiScale" type="xs:string"/>
   <xs:element name="cancer" type="xs:string"/>
-  <xs:element name="materialization" type="xs:string"/>
   <xs:element name="homogeneity" type="xs:string"/>
-  <xs:element name="imageBasedDetectability" type="xs:string"/>
   <xs:element name="freeGrowth" type="xs:boolean"/>
   <xs:element name="treatmentIncluded" type="xs:boolean"/>
   <!--
@@ -257,7 +253,7 @@
   <xs:simpleType name="tumorExtraUnitTypes">
     <xs:restriction base="xs:string">
       <xs:enumeration value="item"/>
-      <xs:enumeration value="Gray"/>
+      <xs:enumeration value="gray"/>
     </xs:restriction>
   </xs:simpleType>
   <!-- Combined lists of unit types used in TumorML -->

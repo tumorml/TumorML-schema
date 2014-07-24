@@ -1,4 +1,4 @@
-# RELAX NG schema for TumorML 1.1
+# RELAX NG schema for TumorML 1.2
 # Author: David Johnson
 # Contributors: Stelios Sfakianakis
 # Created with oXygen XML editor
@@ -7,38 +7,39 @@
 # The TumorML schema is distributed under the terms of the GNU Lesser General Public License (LGPL)
 # http://www.gnu.org/licenses/lgpl.html
 
-namespace tumorml = "http://www.tumor-project.eu/tumorml/1.1"
+namespace tumorml = "http://www.tumor-project.eu/tumorml/1.2"
 
 # Regex for alphanumeric combinations w/ underscores OR MIRIAM URIs
 
 ident = xsd:token { pattern = "_*[0-9a-zA-Z][_0-9a-zA-Z]*|(urn:miriam:([\w\-\.]+\.[\w\-\.]+)+:[\w\-\.]+:[\w\-\.]+)" }
 url = xsd:token { pattern = "[hH][tT]{2}[pP]://[wW]{3}.*" }
 
-# TUMOR repository metadata value types
+# Tumor Model Taxonomy
 
 mathType = 
       string "discrete" 
     | string "continuous" 
     | string "hybrid"
-biocomplexityDirectionType = 
+multiScaleType = 
       string "topDown" 
     | string "bottomUp" 
     | string "middleOut"
+singleScaleType = 
+      string "gene" 
+    | string "subcellular" 
+    | string "cell"
+    | string "tissue"    
+    | string "organ"    
 cancerType = 
       string "glioma" 
     | string "glioblastoma"
     | string "nephroblastoma" 
     | string "lung" 
     | string "breast"
-materializationType = 
-      string "solid" 
-    | string "liquid"
+    | string "generic"
 homogeneityType = 
       string "homogeneous" 
     | string "non-homogeneous"
-imageBasedDetectabilityType = 
-      string "imageable" 
-    | string "non-imageable"
     
 # JSDL types
 # n.b. Restricted due to TUMOR repository DB schema restrictions
@@ -114,11 +115,10 @@ person = element person {
 # n.b. Based on TUMOR repository DB schema
 tumor_elements = (
     element math { mathType | text }?
-  & element biocomplexityDirection { biocomplexityDirectionType | text }?
+  & element singleScale { singleScaleType | text }?
+  & element multiScale { multiScaleType | text }?
   & element cancer { cancerType | text }?
-  & element materialization { materializationType | text }?
   & element homogeneity { homogeneityType | text }?
-  & element imageBasedDetectability { imageBasedDetectabilityType | text }?
   & element freeGrowth { xsd:boolean }?
   & element treatmentIncluded { xsd:boolean }?
 )
@@ -166,7 +166,7 @@ siBaseUnitTypes =
   
 tumorExtraUnitTypes = 
     string "item"
-  | string "Gray"
+  | string "gray"
   
 # Combined lists of unit types used in TumorML
   
